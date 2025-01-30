@@ -1,0 +1,12 @@
+-name: Send Email Notification 
+if: failure()
+uses: dawidd6/action-send-mail1@v3
+with
+server_address: smtp.sendgrip.net
+server_port: 587
+username: ${{secrets.EMAIL_USERNAME}}
+password: ${{secrets.EMAIL_PASSWORD}}
+subject:"CI/CD Pipeline Failure alert"
+body:"The GitHUb Action pipeline has failed.please check the logs."
+to:"team@siphesihle9@.com"
+from:"ci-cd-bot@example.com"
