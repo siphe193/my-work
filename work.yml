@@ -1,0 +1,83 @@
+name: CI/CD Pipeline 
+on:
+Push: 
+branches:
+-main
+pull_request:
+branches:
+-main
+
+job:
+build:
+name: Build stage
+runs-on:ubuntu-latest
+
+steps
+-name: checkout code
+uses:actions /checkout@v3
+
+-name: setup.NET Core
+uses:actions/checkup-dotnet@v3
+with:
+dotnet-version.7.0.x
+
+-name: Restore Dependencies
+run:dotnet restore
+
+-name: build Application
+run:dotnet build--configuration Release--no-restore
+
+-name: Publish Artifacts
+run:dotnet publish-c Release-o./publish
+
+-name: upload Build Artifacts
+uses: actions/upload-artifact@v3
+with:
+name: published-app
+Path:/publish
+
+test
+name: Test Stage
+runs-on:ubuntu-latest
+needs:buils
+
+steps
+name: checkout code
+uses:actions/checkout@v3
+
+name: setup.NET core
+uses:action/setup-dotnet@v3
+with:
+dotnet-version:7.0.x
+
+-name: Restore Dependencies
+run:dotnet restore
+
+-name: Run Unit Tests
+run:dotnet test--configuration Release--no-restore--logge trx--collect:"XPlat code coverage"
+
+-name: Upload Test Results
+uses:action/upload-artifact@v3
+with:
+name: test-results
+path:TestResults
+
+deploy
+name:Deploy to staging
+runs-on:ubuntu-latest
+needs:test
+if: success()
+
+steps:
+-name: Download Build Artifacts
+uses:actions/download-artifact@v3
+with:
+name:published-app
+path:/publish
+
+-name: Deploy to AZURE App Service
+uses:azure/webapps-deploy@v3
+with:
+app-name: my-aspnetcore-app
+publish-profile:${{secrets.AZURE_PUBLISH_PROFILE}}
+package:./publish
