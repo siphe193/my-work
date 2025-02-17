@@ -1,0 +1,30 @@
+tringger:
+branches:
+include:
+-main
+-feature/*
+
+pool:
+vmImage:'ubuntu-lastest'
+
+step
+-task:UseDotNet@2
+inputs:
+packageType:'sdk'
+version:'6.X' #.NET 6 or adjust
+
+-script:dotnet restore
+displayName:'Restore Dependencies'
+
+-script:dotnet test--configuration Release
+displayName:'Build Application'
+
+-script:dotnet test--confguration Release--logger trx
+displayName:'Run Test'
+
+-task: publishTestResults@2
+inputs:
+
+testResultsFormat:'VSTest'
+testResultsfile
+
