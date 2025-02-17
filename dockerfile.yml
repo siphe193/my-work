@@ -1,0 +1,16 @@
+FROM mcr.microsoft.com/dontnet/aspnet:6.0 AS base
+WORKDIR/app
+EXPOSE 80
+FROM mcr.microsoft.com/dotnet/sdk:6.0 AS buil
+WORKDIR/src
+COPY . .
+RUN dotnet restore
+RUN dotnet build -c Release-o/app
+
+FROM build AS publish
+RUN dotnet publish-c Release -o/app
+
+FROM base AS Final
+WORKDIR/APP
+COPY--from=publish/app
+ENTRYPOINT["dotnet","SampleApp.dll"]
