@@ -1,0 +1,8 @@
+-task: Docker@2
+displyName: Build Docker Image
+inputs:
+containerRegistry: '$(dockeRegistryServiceConnection)'
+repository: 'sample-app'
+command: 'buldAndPush'
+Dockerfile: 'Dockerfile'
+tags: '$(Build.BuldId)
